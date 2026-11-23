@@ -17,6 +17,25 @@ def a_df(filas):
     return df
 
 
+def boton_csv(df, nombre_archivo, clave):
+    """Botón para descargar una tabla en CSV (compatible con Excel)."""
+    if df is not None and not df.empty:
+        st.download_button(
+            "Descargar CSV",
+            df.to_csv(index=False).encode("utf-8-sig"),
+            file_name=nombre_archivo,
+            mime="text/csv",
+            key=clave,
+        )
+
+
+def filtrar_texto(df, columna, texto):
+    """Filtra un DataFrame por texto (sin distinguir mayúsculas)."""
+    if df is None or df.empty or not texto or not str(texto).strip():
+        return df
+    return df[df[columna].astype(str).str.contains(str(texto).strip(), case=False, na=False, regex=False)]
+
+
 def puede_ver_global():
     """El administrador y el CD tienen vision global; las tiendas solo la suya."""
     return (
