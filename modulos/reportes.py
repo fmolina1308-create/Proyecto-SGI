@@ -1,9 +1,10 @@
 from datetime import date, timedelta
 
+import pandas as pd
 import streamlit as st
 
 from config.conexion import consultar
-from modulos.utilidades import a_df, selector_tienda
+from modulos.utilidades import a_df, boton_csv, selector_tienda
 
 
 def mostrar_reportes():
@@ -56,12 +57,14 @@ def mostrar_reportes():
             st.info("No hay ventas en el período.")
         else:
             st.dataframe(df_v, hide_index=True)
+            boton_csv(df_v, "ventas.csv", "csv_ventas")
             st.write(f"**Total vendido: ${df_v['subtotal'].sum():,.2f}**")
         st.subheader("Compras")
         if df_c.empty:
             st.info("No hay compras en el período.")
         else:
             st.dataframe(df_c, hide_index=True)
+            boton_csv(df_c, "compras.csv", "csv_compras")
             st.write(f"**Total comprado: ${df_c['subtotal'].sum():,.2f}**")
 
     with tab_prod:
@@ -138,8 +141,10 @@ def mostrar_reportes():
                 lambda f: "Comprar ahora" if f["existencia"] <= f["punto_reorden"] else "No comprar", axis=1)
             solo = st.checkbox("Mostrar solo los productos que hay que comprar", value=True)
             vista = df[df["decision"] == "Comprar ahora"] if solo else df
-            st.dataframe(vista[["tienda", "producto", "existencia", "demanda_diaria", "punto_reorden",
-                                "cantidad_sugerida", "decision"]], hide_index=True)
+            tabla = vista[["tienda", "producto", "existencia", "demanda_diaria", "punto_reorden",
+                           "cantidad_sugerida", "decision"]]
+            st.dataframe(tabla, hide_index=True)
+            boton_csv(tabla, "cuando_y_cuanto_comprar.csv", "csv_comprar")
 
     with tab_cd:
         st.caption("El CD es proveedor de una tienda solo si su costo global de adquisición es menor.")
@@ -164,9 +169,13 @@ def mostrar_reportes():
         if df.empty:
             st.info("No hay productos.")
         else:
+            df["costo_cd"] = pd.to_numeric(df["costo_cd"], errors="coerce")
+            df["mejor_precio_proveedor"] = pd.to_numeric(df["mejor_precio_proveedor"], errors="coerce")
+
             def evaluar(f):
-                if f["costo_cd"] != f["costo_cd"] or f["mejor_precio_proveedor"] != f["mejor_precio_proveedor"]:
+                if pd.isna(f["costo_cd"]) or pd.isna(f["mejor_precio_proveedor"]):
                     return "Sin datos suficientes"
                 return "Sí, el CD es más barato" if f["costo_cd"] < f["mejor_precio_proveedor"] else "No, conviene el proveedor"
             df["conviene_comprar_al_cd"] = df.apply(evaluar, axis=1)
             st.dataframe(df.round(2), hide_index=True)
+            boton_csv(df.round(2), "conviene_comprar_al_cd.csv", "csv_cd")
