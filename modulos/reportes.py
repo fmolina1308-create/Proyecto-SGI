@@ -98,7 +98,6 @@ def mostrar_reportes():
         if not df_c.empty:
             partes.append(df_c.groupby("tienda")["subtotal"].sum().rename("compras"))
         if partes:
-            import pandas as pd
             res = pd.concat(partes, axis=1).fillna(0)
             st.dataframe(res.reset_index())
             st.bar_chart(res)
