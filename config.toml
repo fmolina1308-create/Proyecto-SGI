@@ -1,0 +1,31 @@
+# Tema de colores de la aplicación (Streamlit lo lee automáticamente).
+# Ubicación en el repositorio: .streamlit/config.toml
+# Para cambiar de paleta: comenten con # todas las líneas de la paleta activa
+# y quiten el # de las líneas de la que quieran usar.
+
+# ---------- PALETA B (activa): gris piedra y turquesa ----------
+[theme]
+base = "light"
+primaryColor = "#1F7A7A"
+backgroundColor = "#F3F4F6"
+secondaryBackgroundColor = "#E1E4E8"
+textColor = "#1F2933"
+font = "sans serif"
+
+# ---------- PALETA A: arena y verde ----------
+# [theme]
+# base = "light"
+# primaryColor = "#4F7A52"
+# backgroundColor = "#F6F3EC"
+# secondaryBackgroundColor = "#E6E0D2"
+# textColor = "#2B2B2B"
+# font = "sans serif"
+
+# ---------- PALETA C: hueso y terracota ----------
+# [theme]
+# base = "light"
+# primaryColor = "#B5543C"
+# backgroundColor = "#FAF7F2"
+# secondaryBackgroundColor = "#EDE3D8"
+# textColor = "#2E2A27"
+# font = "sans serif"
