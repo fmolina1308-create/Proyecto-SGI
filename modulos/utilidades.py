@@ -1,3 +1,4 @@
+import io
 from decimal import Decimal
 
 import pandas as pd
@@ -18,15 +19,31 @@ def a_df(filas):
 
 
 def boton_csv(df, nombre_archivo, clave):
-    """Botón para descargar una tabla en CSV (compatible con Excel)."""
-    if df is not None and not df.empty:
-        st.download_button(
-            "Descargar CSV",
-            df.to_csv(index=False).encode("utf-8-sig"),
-            file_name=nombre_archivo,
-            mime="text/csv",
-            key=clave,
+    """Botones para descargar una tabla en Excel (.xlsx) y en CSV."""
+    if df is None or df.empty:
+        return
+    base = nombre_archivo.rsplit(".", 1)[0]
+    col_excel, col_csv = st.columns(2)
+    try:
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine="openpyxl") as escritor:
+            df.to_excel(escritor, index=False, sheet_name="Reporte")
+        col_excel.download_button(
+            "Descargar Excel",
+            buffer.getvalue(),
+            file_name=f"{base}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key=f"{clave}_xlsx",
         )
+    except Exception:
+        pass  # si no está disponible openpyxl, queda el CSV
+    col_csv.download_button(
+        "Descargar CSV",
+        df.to_csv(index=False).encode("utf-8-sig"),
+        file_name=f"{base}.csv",
+        mime="text/csv",
+        key=f"{clave}_csv",
+    )
 
 
 def filtrar_texto(df, columna, texto):
